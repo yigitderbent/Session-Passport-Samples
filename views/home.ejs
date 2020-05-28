@@ -1,9 +1,16 @@
 <%- include('partials/header') %>
 
-<% if (!user) { %>
-	<p>Welcome! Please <a href="/login">log in</a>.</p>
-<% } else { %>
-	<p>Hello, <%= user.email %>. View your <a href="/profile">profile</a>.</p>
-<% } %>
+<div class="jumbotron centered">
+	<div class="container">
+		<i class="fas fa-key fa-6x"></i>
+	<% if (!user) { %>
+		<p>Welcome! Please sign up or login.</p>
+		<a class="btn btn-light btn-lg" href="/register" role="button">Register</a>
+		<a class="btn btn-dark btn-lg" href="/login" role="button">Login</a>
+	<% } else { %>
+		<p>Hello, <%= user.email %>. View your <a href="/profile">profile</a>.</p>
+	<% } %>
+	</div>
+</div>
 
 <%- include('partials/footer') %>

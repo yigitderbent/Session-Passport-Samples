@@ -63,14 +63,11 @@ passport.deserializeUser(function(id, callback) {
     });
 });
 
-app.get("/",(req,res)=>{
-    if(req.isAuthenticated()) res.render("home",{user:req.user});
-    else res.redirect("/login");
-});
+app.get("/",(req,res)=> res.render("home",{user:req.user}));
 
-app.get("/login",(req,res)=>{
-    res.render("login");
-});
+app.get("/login",(req,res)=> res.render("login"));
+
+app.get("/register", (req, res)=> res.render("register"));
 
 app.get("/profile",(req,res)=>{
     if(req.isAuthenticated()) res.render("profile",{user:req.user});
@@ -79,7 +76,7 @@ app.get("/profile",(req,res)=>{
 
 app.get("/logout",(req,res)=>{
     req.session.destroy(); //used instead of req.logOut()
-    res.redirect("/login");
+    res.redirect("/");
 });
 
 app.post("/login",
@@ -88,5 +85,20 @@ app.post("/login",
         failureRedirect: "/login"
     })
 );
+
+app.post("/register", (req, res)=>{  
+    users.register(req.body.username,req.body.password,(err,user)=>{
+      if(err){
+        console.log(err);
+        res.redirect("/register");
+      }
+      else
+        passport.authenticate("local", (err, user)=> {
+            req.logIn(user, err=> {
+              return res.redirect("/profile");
+            });
+          })(req, res);
+    });    
+});
 
 app.listen(process.env.PORT || 3000, _=> console.log("Server started on port 3000."));

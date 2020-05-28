@@ -25,3 +25,11 @@ exports.findById = (id, callback)=>{
         return callback(null,user);
     });
 };
+
+exports.register = (username, password, callback)=>{
+    const newUser = new User({email:username, password:password});
+    newUser.save((err,user) => {
+        if(err) callback(err,null);
+        return callback(null,user);
+    });
+}

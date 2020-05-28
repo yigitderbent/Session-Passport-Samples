@@ -1,10 +1,13 @@
 <%- include('partials/header') %>
+<div class="jumbotron text-center">
+    <div class="container">
+        <i class="fas fa-key fa-6x"></i>
+        <h1 class="display-5">ID: <%= user._id %></h1>
+        <h1 class="display-5">Username: <%= user.email %></h1>
+        <a class="btn btn-light btn-lg" href="/">Home</a>
+        <a class="btn btn-dark btn-lg" href="/logout">Log out</a>
+    </div>
+</div>
 
-    <p>
-    ID: <%= user._id %><br/>
-    Username: <%= user.email %><br/>
-    </p>
-    <a class="btn btn-light btn-lg" href="/">Home</a>
-    <a class="btn btn-light btn-lg" href="/logout">Log out</a>
 
 <%- include('partials/footer') %>
