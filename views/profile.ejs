@@ -1,12 +1,8 @@
 <%- include('partials/header') %>
 
     <p>
-    ID: <%= user.id %><br/>
-    Username: <%= user.username %><br/>
-    Name: <%= user.displayName %><br/>
-    <% if (user.emails) { %>
-    Email: <%= user.emails[0].value %><br/>
-    <% } %>
+    ID: <%= user._id %><br/>
+    Username: <%= user.email %><br/>
     </p>
     <a class="btn btn-light btn-lg" href="/">Home</a>
     <a class="btn btn-light btn-lg" href="/logout">Log out</a>

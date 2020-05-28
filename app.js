@@ -5,7 +5,8 @@ bodyParser = require("body-parser"),
 ejs = require("ejs"),
 passport = require("passport"),
 Strategy = require('passport-local').Strategy,
-users = require("./db/users");
+users = require("./db/users"),
+mongoose = require("mongoose");
  
 const app = express();
 
@@ -29,6 +30,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+mongoose.connect("mongodb://localhost:27017/userDB", 
+{ useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}, err=> {
+  if (!err) console.log('MongoDB Connection Succeeded.');
+  else console.log('Error in DB connection: ' + err);
+});
+
 passport.use(new Strategy(
     (username, password, callback)=>{
       // Find by username function needed here
@@ -42,7 +52,7 @@ passport.use(new Strategy(
   ));
 
 passport.serializeUser(function(user, callback) {
-    callback(null, user.id);
+    callback(null, user._id);
 });
   
 passport.deserializeUser(function(id, callback) {
@@ -79,6 +89,4 @@ app.post("/login",
     })
 );
 
-app.listen(process.env.PORT || 3000, _=>{
-    console.log("Server started on port 3000.");
-});
+app.listen(process.env.PORT || 3000, _=> console.log("Server started on port 3000."));
