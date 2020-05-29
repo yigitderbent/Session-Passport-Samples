@@ -42,10 +42,10 @@ mongoose.connect("mongodb://localhost:27017/userDB",
 passport.use(new Strategy(
     (username, password, callback)=>{
       // Find by username function needed here
-      users.findByUsername(username,(err,user)=>{
+      users.findByUsername(username,password, (err,user)=>{
         if(err) return callback(err);
         if(!user) return callback(null,false);
-        if(user.password != password) return callback(null,false);
+        // if(user.password != password) return callback(null,false);
         return callback(null,user);
       });
     }

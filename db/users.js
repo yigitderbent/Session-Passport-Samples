@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"),
+bcrypt = require("bcrypt"),
+saltRounds = 10;
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -11,12 +13,20 @@ const userSchema = new mongoose.Schema({
 
 const User = new mongoose.model("User",userSchema);
 
-exports.findByUsername = (username, callback)=>{
+exports.findByUsername = (username, password, callback)=>{
     User.findOne({
         email: username
     }).then((user) => {
-        return callback(null,user);
-    });
+        if(user)
+            bcrypt.compare(password, user.password, (err, result)=> {
+                if (result === true) 
+                    return callback(null,user);
+                else
+                    return callback(null,null);
+            });
+        else
+            return callback(null,null);
+    }).catch(err=> callback(err,null));
 };
 
 exports.findById = (id, callback)=>{
@@ -27,9 +37,11 @@ exports.findById = (id, callback)=>{
 };
 
 exports.register = (username, password, callback)=>{
-    const newUser = new User({email:username, password:password});
-    newUser.save((err,user) => {
-        if(err) callback(err,null);
-        return callback(null,user);
+    bcrypt.hash(password, saltRounds, (err, hash)=>{
+        const newUser = new User({email:username, password:hash});
+        newUser.save((err,user) => {
+            if(err) callback(err,null);
+            return callback(null,user);
+        });
     });
 }
