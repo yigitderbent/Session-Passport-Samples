@@ -5,7 +5,8 @@ bodyParser = require("body-parser"),
 ejs = require("ejs"),
 passport = require("passport"),
 User = require("./db/users"),
-mongoose = require("mongoose");
+mongoose = require("mongoose"),
+GoogleStrategy = require('passport-google-oauth20').Strategy;
  
 const app = express();
 
@@ -28,6 +29,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/secrets"
+},
+(accessToken, refreshToken, profile, cb)=>
+  User.findOrCreate({ googleId: profile.id }, (err, user)=>{ return cb(err, user);})
+));
+
 mongoose.connect("mongodb://localhost:27017/userDB", 
 { useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -39,10 +49,23 @@ mongoose.connect("mongodb://localhost:27017/userDB",
 
 passport.use(User.createStrategy());
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser((user, done)=> done(null, user.id));
+
+passport.deserializeUser((id, done)=>{
+  User.findById(id, (err, user)=> done(err, user));
+});
 
 app.get("/",(req,res)=> res.render("home",{user:req.user}));
+
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile"] }));
+
+app.get("/auth/google/secrets", 
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res)=>{
+    // Successful authentication, redirect to profile page.
+    res.redirect("/profile");
+});
 
 app.get("/login",(req,res)=> res.render("login"));
 
